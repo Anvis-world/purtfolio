@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("Home");
+    const [scrollDirection, setScrollDirection] = useState("up");
+    const lastScrollY = useRef(0);
     
     const navItems = [
         { href: "#Home", label: "Home" },
@@ -13,57 +15,106 @@ const Navbar = () => {
         { href: "#Contact", label: "Contact" },
     ];
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-            const sections = navItems.map(item => {
-                const section = document.querySelector(item.href);
-                if (section) {
-                    return {
-                        id: item.href.replace("#", ""),
-                        offset: section.offsetTop - 550,
-                        height: section.offsetHeight
-                    };
-                }
-                return null;
-            }).filter(Boolean);
+    // Enhanced smooth scrolling with easing
+    const smoothScrollTo = (target, duration = 1200) => {
+        const targetPosition = target.offsetTop - 80;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition;
+        let startTime = null;
 
-            const currentPosition = window.scrollY;
-            const active = sections.find(section => 
-                currentPosition >= section.offset && 
-                currentPosition < section.offset + section.height
-            );
+        const easeInOutCubic = (t) => {
+            return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        };
 
-            if (active) {
-                setActiveSection(active.id);
+        const animation = (currentTime) => {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const easedProgress = easeInOutCubic(progress);
+            
+            window.scrollTo(0, startPosition + distance * easedProgress);
+            
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
             }
         };
 
-        window.addEventListener("scroll", handleScroll);
+        requestAnimationFrame(animation);
+    };
+
+    const handleScroll = useCallback(() => {
+        const currentScrollY = window.scrollY;
+        
+        // Determine scroll direction with throttling
+        if (Math.abs(currentScrollY - lastScrollY.current) > 10) {
+            setScrollDirection(currentScrollY > lastScrollY.current ? "down" : "up");
+            lastScrollY.current = currentScrollY;
+        }
+        
+        setScrolled(currentScrollY > 20);
+        
+        // Enhanced active section detection
+        const sections = navItems.map(item => {
+            const section = document.querySelector(item.href);
+            if (section) {
+                return {
+                    id: item.href.replace("#", ""),
+                    offset: section.offsetTop - 200,
+                    height: section.offsetHeight
+                };
+            }
+            return null;
+        }).filter(Boolean);
+
+        const currentPosition = currentScrollY + 200;
+        const active = sections.find(section => 
+            currentPosition >= section.offset && 
+            currentPosition < section.offset + section.height
+        );
+
+        if (active && active.id !== activeSection) {
+            setActiveSection(active.id);
+        }
+    }, [activeSection, navItems]);
+
+    useEffect(() => {
+        let rafId;
+        const throttledHandleScroll = () => {
+            rafId = requestAnimationFrame(handleScroll);
+        };
+
+        window.addEventListener("scroll", throttledHandleScroll, { passive: true });
         handleScroll();
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+        
+        return () => {
+            window.removeEventListener("scroll", throttledHandleScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [handleScroll]);
 
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = '0px'; // Prevent layout shift
         } else {
             document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = '';
         }
+        
+        return () => {
+            document.body.style.overflow = 'unset';
+            document.body.style.paddingRight = '';
+        };
     }, [isOpen]);
 
-    const scrollToSection = (e, href) => {
+    const scrollToSection = useCallback((e, href) => {
         e.preventDefault();
         const section = document.querySelector(href);
         if (section) {
-            const top = section.offsetTop - 100;
-            window.scrollTo({
-                top: top,
-                behavior: "smooth"
-            });
+            smoothScrollTo(section);
+            setIsOpen(false);
         }
-        setIsOpen(false);
-    };
+    }, []);
 
     return (
         <nav
