@@ -118,110 +118,182 @@ const Navbar = () => {
 
     return (
         <nav
-        className={`fixed w-full top-0 z-50 transition-all duration-500 ${
-            isOpen
-                ? "bg-[#030014] opacity-100"
-                : scrolled
-                ? "bg-[#030014]/50 backdrop-blur-xl"
-                : "bg-transparent"
-        }`}
-    >
-        <div className="mx-auto px-4 sm:px-6 lg:px-[10%]">
-            <div className="flex items-center justify-between h-16">
-                {/* Logo */}
-                <div className="flex-shrink-0">
-                    <a
-                        href="#Home"
-                        onClick={(e) => scrollToSection(e, "#Home")}
-                        className="text-xl font-bold bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent"
-                    >
-                        Kabir singh
-                    </a>
-                </div>
-    
-                {/* Desktop Navigation */}
-                <div className="hidden md:block">
-                    <div className="ml-8 flex items-center space-x-8">
-                        {navItems.map((item) => (
-                            <a
-                                key={item.label}
-                                href={item.href}
-                                onClick={(e) => scrollToSection(e, item.href)}
-                                className="group relative px-1 py-2 text-sm font-medium"
-                            >
-                                <span
-                                    className={`relative z-10 transition-colors duration-300 ${
-                                        activeSection === item.href.substring(1)
-                                            ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold"
-                                            : "text-[#e2d3fd] group-hover:text-white"
-                                    }`}
+            className={`fixed w-full top-0 z-50 transition-all duration-700 ease-out ${
+                scrollDirection === "down" && scrolled ? "transform -translate-y-full" : "transform translate-y-0"
+            } ${
+                isOpen
+                    ? "bg-[#030014]/95 backdrop-blur-2xl border-b border-white/10 shadow-2xl"
+                    : scrolled
+                    ? "bg-[#030014]/30 backdrop-blur-xl border-b border-white/5 shadow-lg"
+                    : "bg-transparent"
+            }`}
+        >
+            <div className="mx-auto px-4 sm:px-6 lg:px-[10%]">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo with enhanced animation */}
+                    <div className="flex-shrink-0">
+                        <a
+                            href="#Home"
+                            onClick={(e) => scrollToSection(e, "#Home")}
+                            className="text-xl font-bold bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
+                        >
+                            Kabir singh
+                        </a>
+                    </div>
+        
+                    {/* Enhanced Desktop Navigation */}
+                    <div className="hidden md:block">
+                        <div className="ml-8 flex items-center space-x-8">
+                            {navItems.map((item, index) => (
+                                <a
+                                    key={item.label}
+                                    href={item.href}
+                                    onClick={(e) => scrollToSection(e, item.href)}
+                                    className="group relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 hover:bg-white/5"
+                                    style={{ animationDelay: `${index * 100}ms` }}
                                 >
-                                    {item.label}
-                                </span>
-                                <span
-                                    className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] transform origin-left transition-transform duration-300 ${
-                                        activeSection === item.href.substring(1)
-                                            ? "scale-x-100"
-                                            : "scale-x-0 group-hover:scale-x-100"
-                                    }`}
-                                />
-                            </a>
-                        ))}
+                                    <span
+                                        className={`relative z-10 transition-all duration-300 ${
+                                            activeSection === item.href.substring(1)
+                                                ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold scale-105"
+                                                : "text-[#e2d3fd] group-hover:text-white group-hover:scale-105"
+                                        }`}
+                                    >
+                                        {item.label}
+                                    </span>
+                                    <span
+                                        className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] transform origin-left transition-all duration-500 rounded-full ${
+                                            activeSection === item.href.substring(1)
+                                                ? "scale-x-100 opacity-100"
+                                                : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+                                        }`}
+                                    />
+                                    {/* Hover glow effect */}
+                                    <span
+                                        className={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                                            activeSection === item.href.substring(1)
+                                                ? "bg-gradient-to-r from-[#6366f1]/10 to-[#a855f7]/10 opacity-100"
+                                                : "bg-gradient-to-r from-[#6366f1]/5 to-[#a855f7]/5"
+                                        }`}
+                                    />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+        
+                    {/* Enhanced Mobile Menu Button */}
+                    <div className="md:hidden">
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className={`relative p-3 rounded-xl text-[#e2d3fd] hover:text-white transition-all duration-300 ease-out transform hover:scale-110 ${
+                                isOpen 
+                                    ? "rotate-180 scale-110 bg-white/10 backdrop-blur-md" 
+                                    : "rotate-0 scale-100 hover:bg-white/5"
+                            }`}
+                        >
+                            <div className="relative z-10">
+                                {isOpen ? (
+                                    <X className="w-6 h-6" />
+                                ) : (
+                                    <Menu className="w-6 h-6" />
+                                )}
+                            </div>
+                            {/* Animated background for button */}
+                            <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-[#6366f1]/20 to-[#a855f7]/20 transition-opacity duration-300 ${
+                                isOpen ? "opacity-100" : "opacity-0"
+                            }`} />
+                        </button>
                     </div>
                 </div>
-    
-                {/* Mobile Menu Button */}
-                <div className="md:hidden">
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className={`relative p-2 text-[#e2d3fd] hover:text-white transition-transform duration-300 ease-in-out transform ${
-                            isOpen ? "rotate-90 scale-125" : "rotate-0 scale-100"
-                        }`}
-                    >
-                        {isOpen ? (
-                            <X className="w-6 h-6" />
-                        ) : (
-                            <Menu className="w-6 h-6" />
-                        )}
-                    </button>
+            </div>
+        
+            {/* Enhanced Glassmorphic Mobile Menu Overlay */}
+            <div
+                className={`md:hidden fixed inset-0 z-40 transition-all duration-500 ease-out ${
+                    isOpen
+                        ? "opacity-100 backdrop-blur-2xl"
+                        : "opacity-0 backdrop-blur-0 pointer-events-none"
+                }`}
+                style={{ top: "64px" }}
+            >
+                {/* Glassmorphic background with animated gradient */}
+                <div className={`absolute inset-0 transition-all duration-700 ${
+                    isOpen 
+                        ? "bg-gradient-to-br from-[#030014]/95 via-[#1a0b2e]/90 to-[#030014]/95" 
+                        : "bg-transparent"
+                }`}>
+                    {/* Animated gradient orbs for glassmorphism effect */}
+                    <div className={`absolute top-20 left-10 w-32 h-32 rounded-full transition-all duration-1000 ${
+                        isOpen ? "bg-[#6366f1]/20 blur-xl scale-100" : "bg-[#6366f1]/0 blur-0 scale-0"
+                    }`} />
+                    <div className={`absolute top-40 right-10 w-24 h-24 rounded-full transition-all duration-1000 delay-200 ${
+                        isOpen ? "bg-[#a855f7]/20 blur-xl scale-100" : "bg-[#a855f7]/0 blur-0 scale-0"
+                    }`} />
+                    <div className={`absolute bottom-32 left-1/2 w-20 h-20 rounded-full transition-all duration-1000 delay-400 ${
+                        isOpen ? "bg-[#8b5cf6]/20 blur-xl scale-100" : "bg-[#8b5cf6]/0 blur-0 scale-0"
+                    }`} />
+                </div>
+                
+                {/* Enhanced menu content */}
+                <div className="relative z-10 flex flex-col h-full">
+                    {/* Menu items container with glassmorphic card */}
+                    <div className={`m-6 p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-700 ${
+                        isOpen ? "transform translate-y-0 opacity-100" : "transform -translate-y-10 opacity-0"
+                    }`}>
+                        <div className="space-y-2">
+                            {navItems.map((item, index) => (
+                                <a
+                                    key={item.label}
+                                    href={item.href}
+                                    onClick={(e) => scrollToSection(e, item.href)}
+                                    className={`group block px-6 py-4 text-lg font-medium rounded-xl transition-all duration-500 ease-out hover:bg-white/10 hover:backdrop-blur-md hover:scale-105 hover:shadow-lg ${
+                                        activeSection === item.href.substring(1)
+                                            ? "bg-gradient-to-r from-[#6366f1]/20 to-[#a855f7]/20 border border-white/20 shadow-lg"
+                                            : "hover:border hover:border-white/10"
+                                    }`}
+                                    style={{
+                                        transitionDelay: `${index * 150}ms`,
+                                        transform: isOpen ? "translateX(0) scale(1)" : "translateX(50px) scale(0.95)",
+                                        opacity: isOpen ? 1 : 0,
+                                    }}
+                                >
+                                    <span
+                                        className={`relative flex items-center justify-between transition-all duration-300 ${
+                                            activeSection === item.href.substring(1)
+                                                ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold"
+                                                : "text-[#e2d3fd] group-hover:text-white"
+                                        }`}
+                                    >
+                                        {item.label}
+                                        {/* Active indicator */}
+                                        <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                            activeSection === item.href.substring(1)
+                                                ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] scale-100"
+                                                : "bg-white/20 scale-0 group-hover:scale-100"
+                                        }`} />
+                                    </span>
+                                    {/* Animated underline */}
+                                    <div className={`h-0.5 mt-2 rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] transition-all duration-500 ${
+                                        activeSection === item.href.substring(1)
+                                            ? "w-full opacity-100"
+                                            : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"
+                                    }`} />
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Additional glassmorphic decorative element */}
+                    <div className={`mx-6 mb-6 p-4 rounded-xl backdrop-blur-md bg-white/5 border border-white/10 transition-all duration-700 delay-300 ${
+                        isOpen ? "transform translate-y-0 opacity-100" : "transform translate-y-10 opacity-0"
+                    }`}>
+                        <p className="text-center text-sm text-gray-400">
+                            Swipe up to close menu
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    
-        {/* Mobile Menu Overlay */}
-        <div
-            className={`md:hidden h-2/5 fixed inset-0 bg-[#030014] transition-all duration-300 ease-in-out ${
-                isOpen
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-[-100%] pointer-events-none"
-            }`}
-            style={{ top: "64px" }}
-        >
-            <div className="flex flex-col h-full">
-                <div className="px-4 py-6 space-y-4 flex-1 ">
-                    {navItems.map((item, index) => (
-                        <a
-                            key={item.label}
-                            href={item.href}
-                            onClick={(e) => scrollToSection(e, item.href)}
-                            className={`block px-4 py-3 text-lg font-medium transition-all duration-300 ease ${
-                                activeSection === item.href.substring(1)
-                                    ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold"
-                                    : "text-[#e2d3fd] hover:text-white"
-                            }`}
-                            style={{
-                                transitionDelay: `${index * 100}ms`,
-                                transform: isOpen ? "translateX(0)" : "translateX(50px)",
-                                opacity: isOpen ? 1 : 0,
-                            }}
-                        >
-                            {item.label}
-                        </a>
-                    ))}
-                </div>
-            </div>
-        </div>
-    </nav>
+        </nav>
     
     );
 };
